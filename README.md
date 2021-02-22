@@ -1,7 +1,7 @@
 # Recurop
 A .NET standard library for creating and managing recurring background operations.
 
-What you can do with this library:
+What does this library do:
 1) Runs a method in specified intervals (a.k.a recurring operation).
 2) Stops, resumes or cancels the execution of the recurring operation.
 3) Bind UI elements to the status of the recurring operation. For example, disable a button when the operation is in the middle of execution.

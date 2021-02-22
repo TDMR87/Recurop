@@ -18,12 +18,6 @@ Initialize a named recurring operation object
 var MyRecurringOperation = new RecurringOperation(name: "IncrementCounter");
 ```
 
-Optionally, set callback methods for events
-```c#
-MyRecurringOperation.StatusChanged += OnStatusChanged;
-MyRecurringOperation.OperationFaulted += OnOperationFaulted;
-```
-
 Start recurring operations. In this example, the method CountToMaxInt will be executed every 2 seconds.
 ```c#
 RecurringOperationManager.Instance.StartRecurring(
@@ -60,7 +54,13 @@ RecurringOperationManager.Instance.Abort(MyRecurringOperation);
 
 ***
 
-React to changes in the operation status using a callback methods.
+Optionally, set callback methods for events
+```c#
+MyRecurringOperation.StatusChanged += OnStatusChanged;
+MyRecurringOperation.OperationFaulted += OnOperationFaulted;
+```
+
+React to changes in the operation status.
 ```c#
 static void OnStatusChanged()
 {
@@ -72,7 +72,7 @@ static void OnStatusChanged()
 }
 ```
 
-React to faulted executions using a callback method, when the recurring operation throws an exception.
+React to faulted executions.
 ```c#
 static void OnOperationFaulted(Exception ex)
 {

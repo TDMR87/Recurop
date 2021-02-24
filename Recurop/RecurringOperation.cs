@@ -18,6 +18,7 @@ namespace Recurop
             IsExecuting = false;
             IsRecurring = false;
             IsStopped = true;
+            IsIdle = true;
             CallbackLock = new object();
             Status = RecurringOperationStatus.Stopped;
         }
@@ -54,7 +55,7 @@ namespace Recurop
         private bool isRecurring;
 
         /// <summary>
-        /// 
+        /// Indicates whether the recurring operation is currently stopped.
         /// </summary>
         public bool IsStopped
         {
@@ -66,6 +67,21 @@ namespace Recurop
             }
         }
         private bool isStopped;
+
+        /// <summary>
+        /// Indicates whether the recurring operation is idle. An idle state means that 
+        /// the operation is not yet started or it has been aborted.
+        /// </summary>
+        public bool IsIdle
+        {
+            get => isIdle;
+            set
+            {
+                isIdle = value;
+                OnPropertyChanged();
+            }
+        }
+        private bool isIdle;
 
         /// <summary>
         /// The start time of the latest background operation execution.

@@ -180,6 +180,7 @@ namespace Recurop
                 backgroundOperation.Status = RecurringOperationStatus.Recurring;
                 backgroundOperation.IsRecurring = true;
                 backgroundOperation.IsStopped = false;
+                backgroundOperation.IsIdle = false;
             }
         }
 
@@ -234,6 +235,7 @@ namespace Recurop
                 backgroundOperation.IsRecurring = false;
                 backgroundOperation.IsStopped = true;
                 backgroundOperation.IsExecuting = false;
+                backgroundOperation.IsIdle = true;
             }
         }
 

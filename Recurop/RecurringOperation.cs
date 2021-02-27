@@ -17,10 +17,12 @@ namespace Recurop
             _name = name;
             IsExecuting = false;
             IsRecurring = false;
-            IsStopped = true;
+            IsNotRecurring = true;
+            IsPaused = false;
             IsIdle = true;
+            IsCancelled = false;
             CallbackLock = new object();
-            Status = RecurringOperationStatus.Stopped;
+            Status = RecurringOperationStatus.Idle;
         }
         private readonly string _name;
 
@@ -55,18 +57,48 @@ namespace Recurop
         private bool isRecurring;
 
         /// <summary>
-        /// Indicates whether the recurring operation is currently stopped.
+        /// Indicates whether the recurring background operation is 
+        /// currently in recurring state.
         /// </summary>
-        public bool IsStopped
+        public bool IsNotRecurring
         {
-            get => isStopped;
+            get => !isRecurring;
             internal set
             {
-                isStopped = value;
+                isNotRecurring = value;
                 OnPropertyChanged();
             }
         }
-        private bool isStopped;
+        private bool isNotRecurring;
+
+        /// <summary>
+        /// Indicates whether the recurring background operation is 
+        /// currently in recurring state (and not cancelled, for example).
+        /// </summary>
+        public bool IsCancelled
+        {
+            get => isCancelled;
+            internal set
+            {
+                isCancelled = value;
+                OnPropertyChanged();
+            }
+        }
+        private bool isCancelled;
+
+        /// <summary>
+        /// Indicates whether the recurring operation is currently paused.
+        /// </summary>
+        public bool IsPaused
+        {
+            get => isPaused;
+            internal set
+            {
+                isPaused = value;
+                OnPropertyChanged();
+            }
+        }
+        private bool isPaused;
 
         /// <summary>
         /// Indicates whether the recurring operation is idle. An idle state means that 
@@ -118,6 +150,7 @@ namespace Recurop
             {
                 status = value;
                 OnStatusChanged();
+                OnPropertyChanged();
             }
         }
         private RecurringOperationStatus status;

@@ -5,19 +5,51 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RecuropDemo"
         mc:Ignorable="d"
-        Title="Recurop Demo" Height="200" Width="300">
+        Title="Recurop Demo" Height="200" Width="350">
 
     <Window.DataContext>
         <local:MainWindowViewModel/>
     </Window.DataContext>
-    
-    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Label Content="{Binding DisplayTime}" FontSize="35" HorizontalContentAlignment="Center" />
-        <StackPanel Orientation="Horizontal">
-            <Button Command="{Binding StartCommand}" IsEnabled="{Binding MyRecurringOperation.IsIdle}" Margin="10,10,10,10" Content="Start" />
-            <Button Command="{Binding StopCommand}" IsEnabled="{Binding MyRecurringOperation.IsRecurring}" Margin="10,10,10,10" Content="Stop" />
-            <Button Command="{Binding ContinueCommand}" IsEnabled="{Binding MyRecurringOperation.IsStopped}" Margin="10,10,10,10" Content="Continue" />
-            <Button Command="{Binding CancelCommand}" IsEnabled="{Binding MyRecurringOperation.IsRecurring}" Margin="10,10,10,10" Content="Cancel" /> 
-        </StackPanel>
-    </StackPanel>
+
+    <TabControl>
+        <TabItem Header="Timer">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Label Content="{Binding DisplayTime}" FontSize="40" HorizontalContentAlignment="Center" />
+                <StackPanel Orientation="Horizontal">
+                    <Button Command="{Binding StartTimerCommand}" IsEnabled="{Binding MyRecurringOperation.IsNotRecurring}" Margin="10,10,10,10" Content="Start" />
+                    <Button Command="{Binding LapTimeCommand}" IsEnabled="{Binding MyRecurringOperation.IsRecurring}" Margin="10,10,10,10" Content="Lap" />
+                    <Button Command="{Binding PauseTimerCommand}" IsEnabled="{Binding MyRecurringOperation.IsRecurring}" Margin="10,10,10,10" Content="Pause" />
+                    <Button Command="{Binding ContinueTimerCommand}" IsEnabled="{Binding MyRecurringOperation.IsPaused}" Margin="10,10,10,10" Content="Continue" />
+                    <Button Command="{Binding CancelTimerCommand}" IsEnabled="{Binding MyRecurringOperation.IsRecurring}" Margin="10,10,10,10" Content="Cancel" />
+                    <Button Command="{Binding ThrowCommand}" IsEnabled="{Binding MyRecurringOperation.IsRecurring}" Margin="10,10,10,10" Content="Throw" />
+                </StackPanel>
+            </StackPanel>
+        </TabItem>
+        <TabItem Header="Lap times">
+            <ListBox ItemsSource="{Binding LapTimes}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </TabItem>
+        <TabItem Header="Status">
+            <StackPanel>
+                <TextBlock Text="{Binding MyRecurringOperation.Status, StringFormat=Operation status: {0}}"/>
+                <TextBlock Text="{Binding MyRecurringOperation.IsRecurring, StringFormat=Is recurring: {0}}"/>
+                <TextBlock Text="{Binding MyRecurringOperation.LastRunStart, StringFormat=Last run started: {0:yyyy'-'MM'-'dd'T'HH':'mm':'ss}}"/>
+                <TextBlock Text="{Binding MyRecurringOperation.LastRunFinish, StringFormat=Last run finished: {0:yyyy'-'MM'-'dd'T'HH':'mm':'ss}}"/>
+            </StackPanel>
+        </TabItem>
+        <TabItem Header="Errors">
+            <ListBox ItemsSource="{Binding ExceptionMessages}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </TabItem>
+    </TabControl>
 </Window>

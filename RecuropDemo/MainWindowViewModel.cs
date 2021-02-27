@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Windows.Input;
 using Microsoft.Toolkit.Mvvm.Input;
 using Recurop;
@@ -9,9 +11,9 @@ namespace RecuropDemo
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
-        public RecurringOperation MyRecurringOperation { get; } = new RecurringOperation(name: "TimerOperation");
-        private int elapsedSeconds;
-
+        public ObservableCollection<TimeSpan> LapTimes { get; set; }
+        public ObservableCollection<string> ExceptionMessages { get; set; }
+        public RecurringOperation MyRecurringOperation { get; }
         public TimeSpan DisplayTime
         {
             get => _displayTime ?? TimeSpan.Zero;
@@ -21,35 +23,87 @@ namespace RecuropDemo
                 NotifyPropertyChanged();
             }
         }
+        public MainWindowViewModel()
+        {
+            // Initialize collections
+            LapTimes = new ObservableCollection<TimeSpan>();
+            ExceptionMessages = new ObservableCollection<string>();
+
+            // Initialize the recurring operation
+            MyRecurringOperation = new RecurringOperation(name: "TimerOperation");
+            MyRecurringOperation.OperationFaulted += OnOperationFaulted;
+            MyRecurringOperation.StatusChanged += OnOperationStatusChanged;
+        }
+
+        private int elapsedSeconds;
+        private bool throwException;
         private TimeSpan? _displayTime;
 
-        public ICommand StartCommand => new RelayCommand(() =>
+        private void OnOperationFaulted(Exception ex)
         {
-            RecurringOperationManager.Instance.StartRecurring(
+            // Because this exception event handler delegate is invoked on a
+            // threadpool thread, we can only modify the list on the
+            // thread it was created on (in this case the UI thread).
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                ExceptionMessages.Add(ex.Message);
+            });
+        }
+
+        private void OnOperationStatusChanged()
+        {
+            if (MyRecurringOperation.Status == RecurringOperationStatus.Cancelled)
+            {
+
+            }
+        }
+
+        public ICommand StartTimerCommand => new RelayCommand(() =>
+        {
+            RecurringOperations.Manager.StartRecurring(
                 MyRecurringOperation, TimeSpan.FromSeconds(1), () =>
                 {
-                    DisplayTime = TimeSpan.FromSeconds(elapsedSeconds);
                     elapsedSeconds++;
+
+                    DisplayTime = TimeSpan.FromSeconds(elapsedSeconds);
+
+                    Thread.Sleep(500);
+
+                    if (throwException)
+                    {
+                        throwException = false;
+                        throw new InvalidOperationException("An exception was thrown inside the recurring operation.");
+                    }
                 });
         });
 
-        public ICommand StopCommand => new RelayCommand(() =>
+        public ICommand PauseTimerCommand => new RelayCommand(() =>
         {
-            RecurringOperationManager.Instance.StopRecurring(MyRecurringOperation);
+            RecurringOperations.Manager.PauseRecurring(MyRecurringOperation);
         });
 
-        public ICommand ContinueCommand => new RelayCommand(() =>
+        public ICommand ContinueTimerCommand => new RelayCommand(() =>
         {
-            RecurringOperationManager.Instance.ResumeRecurring(MyRecurringOperation);
+            RecurringOperations.Manager.ResumeRecurring(MyRecurringOperation);
         });
 
-        public ICommand CancelCommand => new RelayCommand(() =>
+        public ICommand CancelTimerCommand => new RelayCommand(() =>
         {
-            RecurringOperationManager.Instance.Abort(MyRecurringOperation);
+            RecurringOperations.Manager.Cancel(MyRecurringOperation);
 
             DisplayTime = TimeSpan.Zero;
 
             elapsedSeconds = 0;
+        });
+
+        public ICommand ThrowCommand => new RelayCommand(() =>
+        {
+            throwException = true;
+        });
+
+        public ICommand LapTimeCommand => new RelayCommand(() =>
+        {
+            LapTimes.Add(DisplayTime);
         });
 
         private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")

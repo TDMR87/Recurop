@@ -2,9 +2,8 @@
 {
     public enum RecurringOperationStatus
     {
-        Recurring,
-        Stopped,
         Executing,
-        Aborted
+        Idle,
+        Cancelled
     }
 }

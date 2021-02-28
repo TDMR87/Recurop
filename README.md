@@ -16,6 +16,7 @@ Also:
 - No unintended operation queueing if the method execution takes longer than the specified interval.
 
 ******************************
+Code examples:
 
 Initialize a named recurring operation
 ```c#

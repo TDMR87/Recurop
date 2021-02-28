@@ -195,6 +195,7 @@ namespace Recurop
             backgroundOperation.IsNotRecurring = false;
             backgroundOperation.IsPaused = false;
             backgroundOperation.IsIdle = false;
+            backgroundOperation.CanBeStarted = false;
         }
 
         /// <summary>
@@ -255,6 +256,8 @@ namespace Recurop
                 backgroundOperation.IsExecuting = false;
                 backgroundOperation.IsIdle = true;
                 backgroundOperation.IsCancelled = true;
+                backgroundOperation.IsNotCancelled = false;
+                backgroundOperation.CanBeStarted = true;
             }
         }
 

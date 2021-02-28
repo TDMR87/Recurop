@@ -21,10 +21,26 @@ namespace Recurop
             IsPaused = false;
             IsIdle = true;
             IsCancelled = false;
+            IsNotCancelled = true;
             CallbackLock = new object();
             Status = RecurringOperationStatus.Idle;
+            CanBeStarted = true;
         }
         private readonly string _name;
+
+        /// <summary>
+        /// Indicates whether the recurring operation can be started.
+        /// </summary>
+        public bool CanBeStarted
+        {
+            get => canBeStarted;
+            internal set
+            {
+                canBeStarted = value;
+                OnPropertyChanged();
+            }
+        }
+        private bool canBeStarted;
 
         /// <summary>
         /// Indicates whether the recurring background operation is 
@@ -62,7 +78,7 @@ namespace Recurop
         /// </summary>
         public bool IsNotRecurring
         {
-            get => !isRecurring;
+            get => isNotRecurring;
             internal set
             {
                 isNotRecurring = value;
@@ -73,7 +89,7 @@ namespace Recurop
 
         /// <summary>
         /// Indicates whether the recurring background operation is 
-        /// currently in recurring state (and not cancelled, for example).
+        /// currently in cancelled state.
         /// </summary>
         public bool IsCancelled
         {
@@ -85,6 +101,21 @@ namespace Recurop
             }
         }
         private bool isCancelled;
+
+        /// <summary>
+        /// Indicates whether the recurring background operation is 
+        /// currently not in cancelled state.
+        /// </summary>
+        public bool IsNotCancelled
+        {
+            get => isNotCancelled;
+            internal set
+            {
+                isNotCancelled = value;
+                OnPropertyChanged();
+            }
+        }
+        private bool isNotCancelled;
 
         /// <summary>
         /// Indicates whether the recurring operation is currently paused.

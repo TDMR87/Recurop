@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Recurop", "Recurop\Recurop.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecuropTests", "RecuropTests\RecuropTests.csproj", "{819D4A82-5CDD-4260-B748-EF220B7CFA05}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecuropDemo", "RecuropDemo\RecuropDemo.csproj", "{2301CBFF-81FE-4096-9ED1-D19433A16333}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{819D4A82-5CDD-4260-B748-EF220B7CFA05}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{819D4A82-5CDD-4260-B748-EF220B7CFA05}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{819D4A82-5CDD-4260-B748-EF220B7CFA05}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2301CBFF-81FE-4096-9ED1-D19433A16333}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2301CBFF-81FE-4096-9ED1-D19433A16333}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2301CBFF-81FE-4096-9ED1-D19433A16333}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2301CBFF-81FE-4096-9ED1-D19433A16333}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

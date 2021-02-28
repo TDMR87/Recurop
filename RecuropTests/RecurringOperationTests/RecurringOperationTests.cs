@@ -25,6 +25,8 @@ namespace RecuropTests
 
             Assert.IsNotNull(operation.GetName());
             Assert.IsTrue(operation.GetName().Length > 0);
+            Assert.IsNotNull(operation.CanBeStarted);
+            Assert.IsTrue(operation.CanBeStarted);
             Assert.IsNotNull(operation.IsRecurring);
             Assert.IsFalse(operation.IsRecurring);
             Assert.IsNotNull(operation.IsNotRecurring);
@@ -35,6 +37,10 @@ namespace RecuropTests
             Assert.IsFalse(operation.IsPaused);
             Assert.IsNotNull(operation.IsIdle);
             Assert.IsTrue(operation.IsIdle);
+            Assert.IsNotNull(operation.IsCancelled);
+            Assert.IsFalse(operation.IsCancelled);
+            Assert.IsNotNull(operation.IsNotCancelled);
+            Assert.IsTrue(operation.IsNotCancelled);
             Assert.IsNotNull(operation.Status);
             Assert.IsTrue(operation.Status == RecurringOperationStatus.Idle);
             Assert.IsNull(operation.Exception);
@@ -49,21 +55,27 @@ namespace RecuropTests
                 operation, TimeSpan.FromSeconds(0.1), DoWork);
 
             // At this point the operation has not yet executed
+            Assert.IsFalse(operation.CanBeStarted);
             Assert.IsTrue(operation.IsRecurring);
             Assert.IsFalse(operation.IsNotRecurring);
             Assert.IsFalse(operation.IsExecuting);
             Assert.IsFalse(operation.IsIdle);
             Assert.IsFalse(operation.IsPaused);
+            Assert.IsFalse(operation.IsCancelled);
+            Assert.IsTrue(operation.IsNotCancelled);
 
             // Wait for operation to start executing
             Thread.Sleep(125);
 
-            // Assert state after starting
+            // Assert state after starting execution
+            Assert.IsFalse(operation.CanBeStarted);
             Assert.IsTrue(operation.IsRecurring);
             Assert.IsFalse(operation.IsNotRecurring);
             Assert.IsTrue(operation.IsExecuting);
             Assert.IsFalse(operation.IsIdle);
             Assert.IsFalse(operation.IsPaused);
+            Assert.IsFalse(operation.IsCancelled);
+            Assert.IsTrue(operation.IsNotCancelled);
 
             // Pause the operation
             RecurringOperations.Manager.PauseRecurring(operation);
@@ -71,11 +83,15 @@ namespace RecuropTests
             Thread.Sleep(125);
 
             // Assert state after pausing
+
+            Assert.IsFalse(operation.CanBeStarted);
             Assert.IsFalse(operation.IsRecurring);
             Assert.IsTrue(operation.IsNotRecurring);
             Assert.IsFalse(operation.IsExecuting);
             Assert.IsTrue(operation.IsIdle);
             Assert.IsTrue(operation.IsPaused);
+            Assert.IsFalse(operation.IsCancelled);
+            Assert.IsTrue(operation.IsNotCancelled);
 
             // Resume the operation
             RecurringOperations.Manager.ResumeRecurring(operation);
@@ -83,11 +99,27 @@ namespace RecuropTests
             Thread.Sleep(125);
 
             // Assert state after resuming
+            Assert.IsFalse(operation.CanBeStarted);
             Assert.IsTrue(operation.IsRecurring);
             Assert.IsFalse(operation.IsNotRecurring);
             Assert.IsTrue(operation.IsExecuting);
             Assert.IsFalse(operation.IsIdle);
             Assert.IsFalse(operation.IsPaused);
+            Assert.IsFalse(operation.IsCancelled);
+            Assert.IsTrue(operation.IsNotCancelled);
+
+            // Cancel the operation
+            RecurringOperations.Manager.Cancel(operation);
+
+            // Assert state after cancelling
+            Assert.IsTrue(operation.CanBeStarted);
+            Assert.IsFalse(operation.IsRecurring);
+            Assert.IsTrue(operation.IsNotRecurring);
+            Assert.IsFalse(operation.IsExecuting);
+            Assert.IsTrue(operation.IsIdle);
+            Assert.IsFalse(operation.IsPaused);
+            Assert.IsTrue(operation.IsCancelled);
+            Assert.IsFalse(operation.IsNotCancelled);
         }
 
         [TestMethod]

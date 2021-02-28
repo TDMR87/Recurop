@@ -24,7 +24,7 @@ var MyRecurringOperation = new RecurringOperation(name: "MyRecurringOperation");
 
 Use the Manager class to start the recurring operation. In this example, the recurring operation will write "Hello world!" to the console every 5 seconds.
 ```c#
-RecurringOperationManager.Instance.StartRecurring(
+RecurringOperations.Manager.StartRecurring(
   MyRecurringOperation, TimeSpan.FromSeconds(5), () => Console.WriteLine("Hello world!"));
 ```
 

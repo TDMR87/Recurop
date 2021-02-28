@@ -69,11 +69,11 @@ MyRecurringOperation.StatusChanged += OnStatusChanged;
 
 static void OnStatusChanged()
 {
-    if (MyRecurringOperation.Status == RecurringOperationStatus.Aborted)
-        Console.WriteLine($"Operation {MyRecurringOperation.GetName()} has been aborted.");
+    if (MyRecurringOperation.Status == RecurringOperationStatus.Cancelled)
+        Console.WriteLine($"Operation {MyRecurringOperation.GetName()} has been cancelled.");
         
-    else if (MyRecurringOperation.Status == RecurringOperationStatus.Stopped)
-        Console.WriteLine($"Operation {MyRecurringOperation.GetName()} has stopped.");
+    else if (MyRecurringOperation.Status == RecurringOperationStatus.Paused)
+        Console.WriteLine($"Operation {MyRecurringOperation.GetName()} has been paused.");
 }
 ```
 

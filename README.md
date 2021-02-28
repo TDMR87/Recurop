@@ -27,7 +27,9 @@ Use the Manager class to start the recurring operation. In this example, the rec
 RecurringOperations.Manager.StartRecurring(
   MyRecurringOperation, TimeSpan.FromSeconds(5), () => Console.WriteLine("Hello world!"));
   
+//
 // Or, instead of a lambda expression, you can use an existing method
+//
 
 RecurringOperations.Manager.StartRecurring(
   MyRecurringOperation, TimeSpan.FromSeconds(5), PrintHelloWorld);

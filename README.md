@@ -25,7 +25,7 @@ Initialize a named recurring operation
 var MyRecurringOperation = new RecurringOperation(name: "MyRecurringOperation");
 ```
 
-Use the Manager class to start the recurring operation. In this example, the recurring operation will write "Hello world!" to the console every 5 seconds.
+Use the Manager class to start the recurring operation, specifying the interval and the method to execute. In this example, the recurring operation will write "Hello world!" to the console every 5 seconds.
 ```c#
 RecurringOperations.Manager.StartRecurring(
   MyRecurringOperation, TimeSpan.FromSeconds(5), () => Console.WriteLine("Hello world!"));

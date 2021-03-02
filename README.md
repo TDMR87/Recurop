@@ -15,6 +15,8 @@ Also:
 - Thread safe. Multiple threads cannot execute the operation and alter state in parallel.
 - No unintended operation queueing if the method execution takes longer than the specified interval.
 
+Available on NuGet: https://www.nuget.org/packages/Recurop/
+
 ******************************
 Code examples:
 

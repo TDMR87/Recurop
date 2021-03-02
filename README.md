@@ -1,79 +1,90 @@
 # Recurop
-A .NET standard library for creating and managing recurring background operations.
+What is Recurop?
 
-What does this library do:
-1) Runs a method in specified intervals (a.k.a recurring operation).
-2) Stops, resumes or cancels the execution of the recurring operation.
-3) Bind UI elements to the status of the recurring operation. For example, disable a button when the operation is in the middle of execution.
-4) Runs operations in the threadpool.
+A .NET standard library for creating, managing and monitoring recurring operations easily. For example: make your method execute in certain intervals.
 
-The operations run with this library will not queue up. That means if the execution of the specified method takes longer than the specified interval, then the next execution happens only after the long running operation has finished running.
+Have you ever coded timer-based methods that execute in certain intervals? Recurop will handle that for you and make sure that running those operations happen in a controlled manner.
 
-Run the ConsoleClientCore console project for an example and test how the library works.
+- Easily stop, resume or cancel the execution of a recurring operation.
+- Monitor and react to changes in the status of the recurring operation (running, executing, paused, cancelled etc).
+- Bind XAML elements to the status of the recurring operation. For example, disable a button when the operation is in the middle of execution.
+- React to events that happen inside the recurring operation, for example if the operation throws an exception in the middle of execution.
+
+Also:
+- Runs the recurring operations in the threadpool.
+- Thread safe. Multiple threads cannot execute the operation and alter state in parallel.
+- No unintended operation queueing if the method execution takes longer than the specified interval.
 
 ******************************
+Code examples:
 
-Initialize a named recurring operation object
+Initialize a named recurring operation
 ```c#
-var MyRecurringOperation = new RecurringOperation(name: "IncrementCounter");
+var MyRecurringOperation = new RecurringOperation(name: "MyRecurringOperation");
 ```
 
-Start recurring operations. In this example, the method CountToMaxInt will be executed every 2 seconds.
+Use the Manager class to start the recurring operation. In this example, the recurring operation will write "Hello world!" to the console every 5 seconds.
 ```c#
-RecurringOperationManager.Instance.StartRecurring(
-  MyRecurringOperation, TimeSpan.FromSeconds(2), CountToMaxInt);
+RecurringOperations.Manager.StartRecurring(
+  MyRecurringOperation, TimeSpan.FromSeconds(5), () => Console.WriteLine("Hello world!"));
+  
+//
+// Or, instead of a lambda expression, you can use an existing method
+//
+
+RecurringOperations.Manager.StartRecurring(
+  MyRecurringOperation, TimeSpan.FromSeconds(5), PrintHelloWorld);
 ```
 
 MyRecurringOperation object now represents the state of the recurring operation. For example, you can poll the status of the operation.
 ```c#
-while (MyRecurringOperation.Status != RecurringOperationStatus.Aborted)
+while (MyRecurringOperation.Status != RecurringOperationStatus.Cancelled)
 {
-    // Get input from user
-    GetUserInput();
+    // Do something
 }
 ```
 
 ***
 
-The static BackgroundOperationManager singleton class provides mechanisms for controlling  and managing the background operations.
+The RecurringOperations.Manager singleton class provides mechanisms for controlling the recurring operation.
 
-Stopping the recurring operation:
+Pause the recurring operation:
 ```c#
-RecurringOperationManager.Instance.StopRecurring(MyRecurringOperation);
+RecurringOperations.Manager.PauseRecurring(MyRecurringOperation);
 ```
 
-Resuming a stopped recurring operation:
+Resume a paused recurring operation:
 ```c#
-RecurringOperationManager.Instance.ResumeRecurring(MyRecurringOperation);
+RecurringOperations.Manager.ResumeRecurring(MyRecurringOperation);
 ```
 
-Aborting a recurring operation (cannot be resumed):
+Cancel a recurring operation (cannot be resumed):
 ```c#
-RecurringOperationManager.Instance.Abort(MyRecurringOperation);
+RecurringOperations.Manager.Cancel(MyRecurringOperation);
 ```
 
 ***
 
-Optionally, set callback methods for events
-```c#
-MyRecurringOperation.StatusChanged += OnStatusChanged;
-MyRecurringOperation.OperationFaulted += OnOperationFaulted;
-```
+Optionally, you can set callback methods to react to events.
 
 React to changes in the operation status.
 ```c#
+MyRecurringOperation.StatusChanged += OnStatusChanged;
+
 static void OnStatusChanged()
 {
-    if (MyRecurringOperation.Status == RecurringOperationStatus.Aborted)
-        Console.WriteLine($"Operation {MyRecurringOperation.GetName()} has been aborted.");
+    if (MyRecurringOperation.Status == RecurringOperationStatus.Cancelled)
+        Console.WriteLine($"Operation {MyRecurringOperation.GetName()} has been cancelled.");
         
-    else if (MyRecurringOperation.Status == RecurringOperationStatus.Stopped)
-        Console.WriteLine($"Operation {MyRecurringOperation.GetName()} has stopped.");
+    else if (MyRecurringOperation.Status == RecurringOperationStatus.Paused)
+        Console.WriteLine($"Operation {MyRecurringOperation.GetName()} has been paused.");
 }
 ```
 
-React to faulted executions.
+React to exceptions in the operation execution.
 ```c#
+MyRecurringOperation.OperationFaulted += OnOperationFaulted;
+
 static void OnOperationFaulted(Exception ex)
 {
     Console.WriteLine($"Operation {MyRecurringOperation.GetName()} has faulted: " +
@@ -81,11 +92,20 @@ static void OnOperationFaulted(Exception ex)
 }
 ```
 
-Use the recurring operation object's public properties with MVVM and property binding to dynamically show changes in the recurring operations status in your applications UI.
+Get a long running recurring operation's last start and finishing time.
+```c#
+DateTime lastRunStart = MyRecurringOperation.LastRunStart;
+
+DateTime lastRunFinish = MyRecurringOperation.LastRunFinish;
+```
+
+Bind XAML control properties to the bindable properties of the recurring operation
 ```xaml
-<Button Text="Start" IsEnabled="{Binding MyBackgroundOperation.IsStopped}"/>
+<Button Text="Start" IsEnabled="{Binding MyBackgroundOperation.CanBeStarted}"/>
 
 <Button Text="Pause" IsEnabled="{Binding MyBackgroundOperation.IsExecuting}" />
+
+<Button Text="Continue" IsEnabled="{Binding MyBackgroundOperation.IsPaused}" />
 
 <Button Text="Cancel" IsEnabled="{Binding MyBackgroundOperation.IsRecurring}" />
 ```

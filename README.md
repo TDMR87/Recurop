@@ -15,6 +15,8 @@ Also:
 - Thread safe. Multiple threads cannot execute the operation and alter state in parallel.
 - No unintended operation queueing if the method execution takes longer than the specified interval.
 
+Available on NuGet: https://www.nuget.org/packages/Recurop/
+
 ******************************
 Code examples:
 
@@ -23,13 +25,13 @@ Initialize a named recurring operation
 var MyRecurringOperation = new RecurringOperation(name: "MyRecurringOperation");
 ```
 
-Use the Manager class to start the recurring operation. In this example, the recurring operation will write "Hello world!" to the console every 5 seconds.
+Use the RecurringOperations.Manager singleton instance to start the recurring operation, specifying the interval and the method to execute. In this example, the recurring operation will write "Hello world!" to the console every 5 seconds.
 ```c#
 RecurringOperations.Manager.StartRecurring(
   MyRecurringOperation, TimeSpan.FromSeconds(5), () => Console.WriteLine("Hello world!"));
   
 //
-// Or, instead of a lambda expression, you can use an existing method
+// Or, instead of a lambda expression, you can use an existing named method
 //
 
 RecurringOperations.Manager.StartRecurring(
@@ -46,7 +48,7 @@ while (MyRecurringOperation.Status != RecurringOperationStatus.Cancelled)
 
 ***
 
-The RecurringOperations.Manager singleton class provides mechanisms for controlling the recurring operation.
+The RecurringOperations.Manager provides mechanisms for controlling the recurring operation.
 
 Pause the recurring operation:
 ```c#
@@ -101,11 +103,11 @@ DateTime lastRunFinish = MyRecurringOperation.LastRunFinish;
 
 Bind XAML control properties to the bindable properties of the recurring operation
 ```xaml
-<Button Text="Start" IsEnabled="{Binding MyBackgroundOperation.CanBeStarted}"/>
+<Button Text="Start" IsEnabled="{Binding MyRecurringOperation.CanBeStarted}"/>
 
-<Button Text="Pause" IsEnabled="{Binding MyBackgroundOperation.IsExecuting}" />
+<Button Text="Pause" IsEnabled="{Binding MyRecurringOperation.IsExecuting}" />
 
-<Button Text="Continue" IsEnabled="{Binding MyBackgroundOperation.IsPaused}" />
+<Button Text="Continue" IsEnabled="{Binding MyRecurringOperation.IsPaused}" />
 
-<Button Text="Cancel" IsEnabled="{Binding MyBackgroundOperation.IsRecurring}" />
+<Button Text="Cancel" IsEnabled="{Binding MyRecurringOperation.IsRecurring}" />
 ```

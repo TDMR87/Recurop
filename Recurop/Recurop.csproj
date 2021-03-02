@@ -1,7 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <Title>Recurop</Title>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageTags>recurop recurring operations threading timer</PackageTags>
+    <Authors>Diego Rönkkömäki</Authors>
+    <Company />
+    <Description>Recurop makes creating, managing and monitoring timer based recurring operation and functions easy.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageId>TDMR.Recurop</PackageId>
+    <Copyright>2021</Copyright>
+    <RepositoryUrl>https://github.com/TDMR87/Recurop</RepositoryUrl>
+    <PackageReleaseNotes>Initial release</PackageReleaseNotes>
   </PropertyGroup>
 
 </Project>

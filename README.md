@@ -103,11 +103,11 @@ DateTime lastRunFinish = MyRecurringOperation.LastRunFinish;
 
 Bind XAML control properties to the bindable properties of the recurring operation
 ```xaml
-<Button Text="Start" IsEnabled="{Binding MyBackgroundOperation.CanBeStarted}"/>
+<Button Text="Start" IsEnabled="{Binding MyRecurringOperation.CanBeStarted}"/>
 
-<Button Text="Pause" IsEnabled="{Binding MyBackgroundOperation.IsExecuting}" />
+<Button Text="Pause" IsEnabled="{Binding MyRecurringOperation.IsExecuting}" />
 
-<Button Text="Continue" IsEnabled="{Binding MyBackgroundOperation.IsPaused}" />
+<Button Text="Continue" IsEnabled="{Binding MyRecurringOperation.IsPaused}" />
 
-<Button Text="Cancel" IsEnabled="{Binding MyBackgroundOperation.IsRecurring}" />
+<Button Text="Cancel" IsEnabled="{Binding MyRecurringOperation.IsRecurring}" />
 ```

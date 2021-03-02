@@ -31,7 +31,7 @@ RecurringOperations.Manager.StartRecurring(
   MyRecurringOperation, TimeSpan.FromSeconds(5), () => Console.WriteLine("Hello world!"));
   
 //
-// Or, instead of a lambda expression, you can use an existing method
+// Or, instead of a lambda expression, you can use an existing named method
 //
 
 RecurringOperations.Manager.StartRecurring(

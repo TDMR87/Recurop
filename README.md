@@ -48,7 +48,7 @@ while (MyRecurringOperation.Status != RecurringOperationStatus.Cancelled)
 
 ***
 
-The RecurringOperations.Manager singleton class provides mechanisms for controlling the recurring operation.
+The RecurringOperations.Manager singleton instance provides mechanisms for controlling the recurring operation.
 
 Pause the recurring operation:
 ```c#

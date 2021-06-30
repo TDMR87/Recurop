@@ -9,12 +9,15 @@ namespace Recurop
     /// </summary>
     public class RecurringOperation : INotifyPropertyChanged
     {
+        public RecurringOperation() : this(Guid.NewGuid().ToString()) { }
+
         public RecurringOperation(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidOperationException(Constants.UnnamedOperationException);
 
             _name = name;
+            IsInitialized = true;
             IsExecuting = false;
             IsRecurring = false;
             IsNotRecurring = true;
@@ -27,6 +30,31 @@ namespace Recurop
             CanBeStarted = true;
         }
         private readonly string _name;
+
+        /// <summary>
+        /// Sets the operation that is to be run as a recurring operation.
+        /// </summary>
+        public Action Operation
+        {
+            internal get => operation;
+            set
+            {
+                if (operation != null) throw new InvalidOperationException("Operation has already been set. Changing the operation is not allowed.");
+                else operation = value;
+            }
+        }
+        private Action operation;
+
+        public bool IsInitialized
+        {
+            get => isInitialized;
+            internal set
+            {
+                isInitialized = value;
+                OnPropertyChanged();
+            }
+        }
+        private bool isInitialized;
 
         /// <summary>
         /// Indicates whether the recurring operation can be started.

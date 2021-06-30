@@ -19,10 +19,33 @@ namespace RecuropTests
         }
 
         [TestMethod]
-        public void HasCorrectState()
+        public void InitializingOperationWithoutNameGeneratesGuid()
         {
-            var operation = new RecurringOperation(name: "StateTest");
+            var operation = new RecurringOperation();
 
+            Assert.IsTrue(!string.IsNullOrWhiteSpace(operation.GetName()));
+
+            if (Guid.TryParseExact(operation.GetName(), null, out Guid guid))
+            {
+                Assert.IsTrue(guid != Guid.Empty);
+            }
+        }
+
+        [TestMethod]
+        public void InitializingOperationWithNameDoesNotGenerateGuid()
+        {
+            string name = "Test operation";
+            var operation = new RecurringOperation(name);
+
+            Assert.AreEqual(name, operation.GetName());
+        }
+
+        [TestMethod]
+        public void OperationHasCorrectState()
+        {
+            var operation = new RecurringOperation();
+
+            Assert.IsTrue(operation.IsInitialized);
             Assert.IsNotNull(operation.GetName());
             Assert.IsTrue(operation.GetName().Length > 0);
             Assert.IsNotNull(operation.CanBeStarted);
@@ -51,7 +74,7 @@ namespace RecuropTests
             }
 
             // Start recurring
-            RecurringOperations.Manager.StartRecurring(
+            RecurringOperationsManager.Instance.StartRecurring(
                 operation, TimeSpan.FromSeconds(0.1), DoWork);
 
             // At this point the operation has not yet executed
@@ -78,12 +101,10 @@ namespace RecuropTests
             Assert.IsTrue(operation.IsNotCancelled);
 
             // Pause the operation
-            RecurringOperations.Manager.PauseRecurring(operation);
-
+            RecurringOperationsManager.Instance.PauseRecurring(operation);
             Thread.Sleep(125);
 
             // Assert state after pausing
-
             Assert.IsFalse(operation.CanBeStarted);
             Assert.IsFalse(operation.IsRecurring);
             Assert.IsTrue(operation.IsNotRecurring);
@@ -94,8 +115,7 @@ namespace RecuropTests
             Assert.IsTrue(operation.IsNotCancelled);
 
             // Resume the operation
-            RecurringOperations.Manager.ResumeRecurring(operation);
-
+            RecurringOperationsManager.Instance.ResumeRecurring(operation);
             Thread.Sleep(125);
 
             // Assert state after resuming
@@ -109,14 +129,14 @@ namespace RecuropTests
             Assert.IsTrue(operation.IsNotCancelled);
 
             // Cancel the operation
-            RecurringOperations.Manager.Cancel(operation);
+            RecurringOperationsManager.Instance.CancelRecurring(operation);
 
             // Assert state after cancelling
             Assert.IsTrue(operation.CanBeStarted);
             Assert.IsFalse(operation.IsRecurring);
             Assert.IsTrue(operation.IsNotRecurring);
             Assert.IsFalse(operation.IsExecuting);
-            Assert.IsTrue(operation.IsIdle);
+            Assert.IsFalse(operation.IsIdle);
             Assert.IsFalse(operation.IsPaused);
             Assert.IsTrue(operation.IsCancelled);
             Assert.IsFalse(operation.IsNotCancelled);
@@ -132,10 +152,12 @@ namespace RecuropTests
                 Thread.Sleep(250);
             }
 
-            RecurringOperations.Manager.StartRecurring(
+            RecurringOperationsManager.Instance.StartRecurring(
                 operation, TimeSpan.FromSeconds(0.1), DoWork);
 
-            // At this point the operation status should be Idle
+            // At this point the operation status should be Idle, because
+            // "start immediately" parameter was false and the operation is not
+            // executing any code
             Assert.IsTrue(operation.Status == RecurringOperationStatus.Idle);
 
             Thread.Sleep(150);
@@ -143,7 +165,15 @@ namespace RecuropTests
             // At this point the operation should be in the middle of execution
             Assert.IsTrue(operation.Status == RecurringOperationStatus.Executing);
 
-            RecurringOperations.Manager.Cancel(operation);
+            // Pause
+            RecurringOperationsManager.Instance.PauseRecurring(operation);
+            Assert.IsTrue(operation.Status == RecurringOperationStatus.Paused);
+
+            // Resume
+            RecurringOperationsManager.Instance.ResumeRecurring(operation);
+            Assert.IsTrue(operation.Status == RecurringOperationStatus.Idle);
+
+            RecurringOperationsManager.Instance.CancelRecurring(operation);
 
             // At this point the operation status should be Cancelled
             Assert.IsTrue(operation.Status == RecurringOperationStatus.Cancelled);
@@ -192,14 +222,14 @@ namespace RecuropTests
 
             // Start recurring.
             // Will throw an exception after 0.2 seconds
-            RecurringOperations.Manager.StartRecurring(
+            RecurringOperationsManager.Instance.StartRecurring(
                 operation, TimeSpan.FromSeconds(0.2), FaultingOperation);
 
             // Wait for the operation to occur atleast once
             Thread.Sleep(250);
 
             // Cancel the operation, so that other tests can start an operation with the same name
-            RecurringOperations.Manager.Cancel(operation);
+            RecurringOperationsManager.Instance.CancelRecurring(operation);
 
             // If delegate was invoked, delegateInvoked should be true
             Assert.IsTrue(delegateInvoked);
@@ -227,14 +257,14 @@ namespace RecuropTests
             operation.StatusChanged += OnStatusChanged;
 
             // Start recurring
-            RecurringOperations.Manager.StartRecurring(
+            RecurringOperationsManager.Instance.StartRecurring(
                 operation, TimeSpan.FromSeconds(0.2), DoWork);
 
             // Wait for the operation to occur atleast once
             Thread.Sleep(250);
 
             // Cancel the operation, so that other tests can start an operation with the same name
-            RecurringOperations.Manager.Cancel(operation);
+            RecurringOperationsManager.Instance.CancelRecurring(operation);
 
             // If statusChanged is true, the event handler works
             Assert.IsTrue(statusChanged);
@@ -254,14 +284,14 @@ namespace RecuropTests
             var operation = new RecurringOperation("LastRunStart");
 
             // Start recurring
-            RecurringOperations.Manager.StartRecurring(
+            RecurringOperationsManager.Instance.StartRecurring(
                 operation, TimeSpan.FromSeconds(0.1), DoWork);
 
             // Wait for the operation to occur atleast once
             Thread.Sleep(250);
 
             // Cancel the operation, so that other tests can start an operation with the same name
-            RecurringOperations.Manager.Cancel(operation);
+            RecurringOperationsManager.Instance.CancelRecurring(operation);
 
             // Assert that LastRunStart is greater than the time before recurring
             Assert.IsTrue(operation.LastRunStart > beforeRecurring);
@@ -281,14 +311,14 @@ namespace RecuropTests
             var operation = new RecurringOperation("LastRunFinishTest");
 
             // Start recurring
-            RecurringOperations.Manager.StartRecurring(
+            RecurringOperationsManager.Instance.StartRecurring(
                 operation, TimeSpan.FromSeconds(0.1), DoWork);
 
             // Wait for the operation to occur atleast once
             Thread.Sleep(250);
 
             // Cancel the operation, so that other tests can run an operation with the same name
-            RecurringOperations.Manager.Cancel(operation);
+            RecurringOperationsManager.Instance.CancelRecurring(operation);
 
             // Assert that LastRunFinish is greater than the time before recurring
             Assert.IsTrue(operation.LastRunFinish > DateTime.MinValue);
@@ -306,7 +336,7 @@ namespace RecuropTests
             var operation = new RecurringOperation("IsExecutingTest");
 
             // Start recurring
-            RecurringOperations.Manager.StartRecurring(
+            RecurringOperationsManager.Instance.StartRecurring(
                 operation, TimeSpan.FromSeconds(0.1), DoWork);
 
             Thread.Sleep(150);
@@ -315,7 +345,7 @@ namespace RecuropTests
             Assert.IsTrue(operation.IsExecuting);
 
             // Cancel the operation
-            RecurringOperations.Manager.Cancel(operation);
+            RecurringOperationsManager.Instance.CancelRecurring(operation);
         }
 
         [TestMethod]
@@ -330,18 +360,18 @@ namespace RecuropTests
             var operation1 = new RecurringOperation("RecurringExceptionTest");
             var operation2 = new RecurringOperation("RecurringExceptionTest");
 
-            RecurringOperations.Manager.StartRecurring(
+            RecurringOperationsManager.Instance.StartRecurring(
                 operation1, TimeSpan.FromSeconds(0.1), DoWork);
 
             // Trying to start an identical recurring operation should throw
             Assert.ThrowsException<InvalidOperationException>(() =>
             {
-                RecurringOperations.Manager.StartRecurring(
+                RecurringOperationsManager.Instance.StartRecurring(
                     operation2, TimeSpan.FromSeconds(0.1), DoWork);
             });
 
-            RecurringOperations.Manager.Cancel(operation1);
-            RecurringOperations.Manager.Cancel(operation2);
+            RecurringOperationsManager.Instance.CancelRecurring(operation1);
+            RecurringOperationsManager.Instance.CancelRecurring(operation2);
         }
     }
 }

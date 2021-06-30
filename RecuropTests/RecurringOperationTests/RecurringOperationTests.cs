@@ -10,7 +10,7 @@ namespace RecuropTests
     public class RecurringOperationTests
     {
         [TestMethod]
-        public void NameIsMandatoryOnNewRecurringOperationInitialization()
+        public void EmptyNameThrowsExceptionOnNewRecurringOperationInitialization()
         {
             Assert.ThrowsException<InvalidOperationException>(() =>
             {
@@ -43,8 +43,8 @@ namespace RecuropTests
         [TestMethod]
         public void OperationHasCorrectState()
         {
+            // Assert state after initialization
             var operation = new RecurringOperation();
-
             Assert.IsTrue(operation.IsInitialized);
             Assert.IsNotNull(operation.GetName());
             Assert.IsTrue(operation.GetName().Length > 0);

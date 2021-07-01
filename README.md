@@ -3,8 +3,6 @@ What is Recurop?
 
 A .NET standard library for creating, managing and monitoring recurring operations easily. For example: make your method execute in certain intervals.
 
-Have you ever coded timer-based methods that execute in certain intervals? Recurop will handle that for you and make sure that running those operations happen in a controlled manner.
-
 - Easily stop, resume or cancel the execution of a recurring operation.
 - Monitor and react to changes in the status of the recurring operation (running, executing, paused, cancelled etc).
 - Bind XAML elements to the status of the recurring operation. For example, disable a button when the operation is in the middle of execution.
